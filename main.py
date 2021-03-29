@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import time
 from preparedata import *
 from draw import *
 from greedy_algorithm import *
@@ -47,6 +47,27 @@ def test(matrix, alg, number_of_tests, path_length):
 
     return all_paths[best]
 
+def test_random(matrix, path_length):
+    all_paths = []
+    all_distances = []
+    # Average time of the slowest local search algorithm
+    timeout = 1.083495
+    timeout_start = time.time()
+    while time.time() < timeout_start + timeout:
+        path_in, out = generate_random_path(path_length, len(matrix[0]))
+        current_len = calculate_distance(matrix, path_in)
+        all_distances.append(current_len)
+        all_paths.append(path_in)
+
+
+    print("Distances")
+    best, worst, mean = results(np.asarray(all_distances))
+    print(all_distances[best])
+    print(all_distances[worst])
+    print(mean)
+
+    return all_paths[best]
+
 
 def results(all_distance):
     best = all_distance.argmin(axis=0)
@@ -62,6 +83,9 @@ def main(path):
     matrix = loaded_data.calculate_distance_matrix()
     number_of_tests = 100
     path_length = 50
+    print("Random")
+    random = test_random(matrix, path_length)
+    drawing.draw_results(random,"images/random" + path + ".png", 'random_' + path)
     print("Greedy ver")
     min_path = test(matrix, GreedyVerticlesAlgorithm, number_of_tests,path_length)
     drawing.draw_results(min_path, "images/greed_ver" + path + ".png", 'greed_ver_' + path)
@@ -74,6 +98,7 @@ def main(path):
     print("Steepest edge")
     min_path = test(matrix, SteepestEdgesAlgorithm, number_of_tests, path_length)
     drawing.draw_results(min_path, "images/steepest_edge" + path + ".png", 'steepest_edge_' + path)
+
 
 
 if __name__ == '__main__':
